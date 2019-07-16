@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StackExchange.Redis.Extensions.Binary;
 using StackExchange.Redis.Extensions.Core.Configuration;
-using StackExchange.Redis.Extensions.Newtonsoft;
 
 namespace PlayingWithDistributedCaching
 {
@@ -25,7 +25,8 @@ namespace PlayingWithDistributedCaching
 
       services.AddSingleton(redisConfiguration); // It is mandatory.
 
-      services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(redisConfiguration);
+      services.AddStackExchangeRedisExtensions<BinarySerializer>(redisConfiguration);
+      //services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(redisConfiguration);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
