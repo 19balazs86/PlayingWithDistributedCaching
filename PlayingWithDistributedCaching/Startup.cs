@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StackExchange.Redis.Extensions.Core.Configuration;
-using StackExchange.Redis.Extensions.Protobuf;
+using StackExchange.Redis.Extensions.Newtonsoft;
 
 namespace PlayingWithDistributedCaching
 {
@@ -25,8 +25,7 @@ namespace PlayingWithDistributedCaching
 
       services.AddSingleton(redisConfiguration); // It is mandatory.
 
-      services.AddStackExchangeRedisExtensions<ProtobufSerializer>(redisConfiguration);
-      //services.AddStackExchangeRedisExtensions<MsgPackObjectSerializer>(redisConfiguration);
+      services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(redisConfiguration);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
