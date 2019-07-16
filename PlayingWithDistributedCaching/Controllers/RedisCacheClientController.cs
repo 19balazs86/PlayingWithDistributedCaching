@@ -11,7 +11,7 @@ namespace PlayingWithDistributedCaching.Controllers
 {
   [Route("[controller]")]
   [ApiController]
-  public class RedisController : ControllerBase
+  public class RedisCacheClientController : ControllerBase
   {
     private readonly IRedisCacheClient _redis;
 
@@ -19,7 +19,7 @@ namespace PlayingWithDistributedCaching.Controllers
 
     private const string _keyPrefix = "UserKey_";
 
-    public RedisController(IRedisCacheClient redis) => _redis = redis;
+    public RedisCacheClientController(IRedisCacheClient redis) => _redis = redis;
 
     [HttpGet]
     public async Task<IEnumerable<User>> Get()
@@ -36,19 +36,24 @@ namespace PlayingWithDistributedCaching.Controllers
       => _redisDb.GetAsync<User>($"{_keyPrefix}{id}");
 
     [HttpPost]
-    public Task<bool> Post([FromBody] User user)
+    public async Task<string> Post([FromBody] User user)
     {
       user.DateCreated = DateTime.Now;
 
-      return _redisDb.AddAsync($"{_keyPrefix}{user.Id}", user, TimeSpan.FromSeconds(15), When.NotExists);
+      bool added = await _redisDb.AddAsync($"{_keyPrefix}{user.Id}", user, TimeSpan.FromSeconds(15), When.NotExists);
+
+      return added ? "User is added." : "User is already in the cache.";
     }
 
     [HttpPut]
-    public Task<bool> Put([FromBody] User user)
+    public async Task<string> Put([FromBody] User user)
     {
+      user.DateCreated  = DateTime.Now; // Otherwise the value will be default.
       user.DateModified = DateTime.Now;
 
-      return _redisDb.ReplaceAsync($"{_keyPrefix}{user.Id}", user, TimeSpan.FromSeconds(15), When.Exists);
+      bool replaced = await _redisDb.ReplaceAsync($"{_keyPrefix}{user.Id}", user, TimeSpan.FromSeconds(15), When.Exists);
+
+      return replaced ? "User is replaced." : "User is NOT in the cache.";
     }
 
     [HttpDelete("{id}")]

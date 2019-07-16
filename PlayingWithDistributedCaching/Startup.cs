@@ -21,12 +21,7 @@ namespace PlayingWithDistributedCaching
     {
       services.AddControllers();
 
-      var redisConfiguration = _configuration.GetSection("Redis").Get<RedisConfiguration>();
-
-      services.AddSingleton(redisConfiguration); // It is mandatory.
-
-      services.AddStackExchangeRedisExtensions<BinarySerializer>(redisConfiguration);
-      //services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(redisConfiguration);
+      initStackExchangeRedisExtensions(services);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -37,6 +32,16 @@ namespace PlayingWithDistributedCaching
       app.UseRouting();
 
       app.UseEndpoints(endpoints => endpoints.MapControllers());
+    }
+
+    private void initStackExchangeRedisExtensions(IServiceCollection services)
+    {
+      var redisConfiguration = _configuration.GetSection("Redis").Get<RedisConfiguration>();
+
+      services.AddSingleton(redisConfiguration); // It is mandatory.
+
+      services.AddStackExchangeRedisExtensions<BinarySerializer>(redisConfiguration);
+      //services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(redisConfiguration);
     }
   }
 }
