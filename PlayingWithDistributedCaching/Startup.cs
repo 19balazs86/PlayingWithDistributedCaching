@@ -21,6 +21,12 @@ namespace PlayingWithDistributedCaching
     {
       services.AddControllers();
 
+      services.AddStackExchangeRedisCache(options =>
+      {
+        options.Configuration = "localhost";
+        options.InstanceName  = "KeyPrefix";
+      });
+
       initStackExchangeRedisExtensions(services);
     }
 

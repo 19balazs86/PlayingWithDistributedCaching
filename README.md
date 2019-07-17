@@ -1,9 +1,9 @@
 # Playing with distributed caching
 
-#### Solutions
+#### Resources
 
-- In the example: [StackExchange.Redis.Extensions](https://github.com/imperugo/StackExchange.Redis.Extensions) - This library extends the [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis).
-- [Microsoft Docs](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-3.0): Memory, SQL, Redis.
+- Personally, I prefer the [Microsoft Docs](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-3.0) (Memory, SQL, [Redis](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed?view=aspnetcore-3.0#distributed-redis-cache)).
+- [StackExchange.Redis.Extensions](https://github.com/imperugo/StackExchange.Redis.Extensions) - This library extends the [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis).
 - Michael Coding Spot: [Cache Implementations](https://michaelscodingspot.com/cache-implementations-in-csharp-net/) (In-Memory).
 
 ##### Setup a Redis server on Windows.

@@ -48,7 +48,7 @@ namespace PlayingWithDistributedCaching.Controllers
     [HttpPut]
     public async Task<string> Put([FromBody] User user)
     {
-      user.DateCreated  = DateTime.Now; // Otherwise the value will be default.
+      user.DateCreated  = DateTime.Now;
       user.DateModified = DateTime.Now;
 
       bool replaced = await _redisDb.ReplaceAsync($"{_keyPrefix}{user.Id}", user, TimeSpan.FromSeconds(15), When.Exists);
