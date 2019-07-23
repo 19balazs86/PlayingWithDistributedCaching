@@ -77,6 +77,27 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "cache-resource-filter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/DistributedCache/cache-resource-filter/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"DistributedCache",
+								"cache-resource-filter",
+								"1"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

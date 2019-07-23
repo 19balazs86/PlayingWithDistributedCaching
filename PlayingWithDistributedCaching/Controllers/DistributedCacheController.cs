@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Net.Mime;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using PlayingWithDistributedCaching.FilterCaching;
 using PlayingWithDistributedCaching.Models;
 
 namespace PlayingWithDistributedCaching.Controllers
@@ -11,6 +13,8 @@ namespace PlayingWithDistributedCaching.Controllers
   [ApiController]
   public class DistributedCacheController : ControllerBase
   {
+    private readonly Random _random = new Random();
+
     private const string _keyPrefix = "UserKey_";
 
     private readonly DistributedCacheEntryOptions _cacheOptions =
@@ -45,5 +49,26 @@ namespace PlayingWithDistributedCaching.Controllers
     [HttpDelete("{id}")]
     public Task Delete(int id)
       => _cache.RemoveAsync($"{_keyPrefix}{id}");
+
+    [HttpGet("cache-resource-filter/{id}")]
+    [CacheResourceFilter(absoluteExpiration: 15, slidingExpiration: 5)]
+    public async Task<IActionResult> CacheResourceFilter(int id)
+    {
+      IActionResult[] results = new IActionResult[]
+      {
+        new OkObjectResult(new User { Id = id, FirstName = "OkObjectResult", DateCreated = DateTime.Now }),
+        new JsonResult(new User { Id = id, FirstName = "JsonResult", DateCreated = DateTime.Now }),
+        new ContentResult
+        {
+          Content     = JsonSerializer.ToString(new User { Id = id, FirstName = "ContentResult", DateCreated = DateTime.Now }),
+          ContentType = MediaTypeNames.Application.Json
+        },
+        new NotFoundObjectResult(new User { Id = id, FirstName = "NotFoundObjectResult", DateCreated = DateTime.Now })
+      };
+
+      await Task.Delay(1500);
+
+      return results[_random.Next(0, results.Length)];
+    }
   }
 }
