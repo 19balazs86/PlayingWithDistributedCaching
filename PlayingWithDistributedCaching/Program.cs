@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace PlayingWithDistributedCaching
 {
@@ -15,7 +16,10 @@ namespace PlayingWithDistributedCaching
       return Host
         .CreateDefaultBuilder(args)
         .ConfigureWebHostDefaults(webHostBuilder =>
-            webHostBuilder.UseStartup<Startup>());
+          webHostBuilder
+            .ConfigureLogging(loggingBuilder =>
+              loggingBuilder.AddFilter("Microsoft", LogLevel.Warning))
+            .UseStartup<Startup>());
     }
   }
 }
