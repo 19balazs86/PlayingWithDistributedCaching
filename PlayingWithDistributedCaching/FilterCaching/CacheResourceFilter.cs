@@ -25,9 +25,9 @@ namespace PlayingWithDistributedCaching.FilterCaching
       DistributedCacheEntryOptions cacheOptions,
       ILogger<CacheResourceFilter> logger)
     {
-      _cache = cache;
+      _cache        = cache;
       _cacheOptions = cacheOptions;
-      _logger = logger;
+      _logger       = logger;
 
       _binaryFormatter = new BinaryFormatter();
 
@@ -36,7 +36,7 @@ namespace PlayingWithDistributedCaching.FilterCaching
 
     public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
     {
-      // If it is not GET method just proceed.
+      // Just proceed, if it is not a GET method.
       if (context.HttpContext.Request.Method != HttpMethod.Get.Method)
       {
         await next();
@@ -50,7 +50,7 @@ namespace PlayingWithDistributedCaching.FilterCaching
       // --> Get value from the cache.
       try
       {
-        bytes = await _cache.GetAsync(key);
+        bytes = await _cache.GetAsync(key, context.HttpContext.RequestAborted);
       }
       catch (Exception ex)
       {
@@ -94,7 +94,7 @@ namespace PlayingWithDistributedCaching.FilterCaching
 
           _binaryFormatter.Serialize(memoryStream, cachingObject); // Need Serializable attribute for custom object.
 
-          await _cache.SetAsync(key, memoryStream.ToArray(), _cacheOptions);
+          await _cache.SetAsync(key, memoryStream.ToArray(), _cacheOptions, context.HttpContext.RequestAborted);
         }
         catch (SerializationException ex)
         {
@@ -102,7 +102,7 @@ namespace PlayingWithDistributedCaching.FilterCaching
         }
         catch (Exception ex)
         {
-          _logger.LogWarning(ex, "Failed to set the cache.", cachingObject);
+          _logger.LogWarning(ex, "Failed to set the cache.");
         }
       }
       else
@@ -118,7 +118,7 @@ namespace PlayingWithDistributedCaching.FilterCaching
           _              => new JsonResult(deserializedObj) as IActionResult
         };
 
-        _logger.LogInformation($"The value was found in the cache for the {deserializedObj.GetType().FullName}.");
+        _logger.LogInformation("The value was found in the cache.");
       }
     }
   }
