@@ -51,7 +51,7 @@ namespace PlayingWithDistributedCaching.Controllers
       => _cache.RemoveAsync($"{_keyPrefix}{id}");
 
     [HttpGet("cache-resource-filter/{id}")]
-    [CacheResourceFilter(absoluteExpiration: 15, slidingExpiration: 5)]
+    [ServiceFilter(typeof(CacheResourceFilter<DefaultCacheOptions>))]
     public async Task<IActionResult> CacheResourceFilter(int id)
     {
       IActionResult[] results = new IActionResult[]

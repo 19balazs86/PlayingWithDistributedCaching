@@ -13,21 +13,22 @@ using Microsoft.Extensions.Logging;
 
 namespace PlayingWithDistributedCaching.FilterCaching
 {
-  public class CacheResourceFilter : IAsyncResourceFilter
+  public class CacheResourceFilter<T> : IAsyncResourceFilter where T : ICacheOptionProvider
   {
     private readonly IDistributedCache _cache;
-    private readonly DistributedCacheEntryOptions _cacheOptions;
-    private readonly ILogger<CacheResourceFilter> _logger;
+    private readonly T _cacheOption;
+    private readonly ILogger<CacheResourceFilter<T>> _logger;
+
     private readonly BinaryFormatter _binaryFormatter;
 
     public CacheResourceFilter(
       IDistributedCache cache,
-      DistributedCacheEntryOptions cacheOptions,
-      ILogger<CacheResourceFilter> logger)
+      T cacheOption,
+      ILogger<CacheResourceFilter<T>> logger)
     {
-      _cache        = cache;
-      _cacheOptions = cacheOptions;
-      _logger       = logger;
+      _cache       = cache;
+      _logger      = logger;
+      _cacheOption = cacheOption;
 
       _binaryFormatter = new BinaryFormatter();
 
@@ -83,7 +84,7 @@ namespace PlayingWithDistributedCaching.FilterCaching
           _                 => null
         };
 
-        if (cachingObject is null) return;
+        if (cachingObject is null || cachingObject.GetType().IsValueType) return;
 
         _logger.LogInformation($"Caching the object for the key: '{key}'.");
 
@@ -94,7 +95,7 @@ namespace PlayingWithDistributedCaching.FilterCaching
 
           _binaryFormatter.Serialize(memoryStream, cachingObject); // Need Serializable attribute for custom object.
 
-          await _cache.SetAsync(key, memoryStream.ToArray(), _cacheOptions, context.HttpContext.RequestAborted);
+          await _cache.SetAsync(key, memoryStream.ToArray(), _cacheOption.Value, context.HttpContext.RequestAborted);
         }
         catch (SerializationException ex)
         {

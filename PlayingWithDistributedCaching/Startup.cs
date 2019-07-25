@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PlayingWithDistributedCaching.FilterCaching;
 using StackExchange.Redis.Extensions.Binary;
 using StackExchange.Redis.Extensions.Core.Configuration;
 
@@ -32,9 +33,8 @@ namespace PlayingWithDistributedCaching
 
       initStackExchangeRedisExtensions(services);
 
-      // It is not needed. The new filter is creating on the fly in the attribute.
-      // Not using the ServiceFilterAttribute.
-      //services.AddSingleton<CacheResourceFilter>();
+      services.AddSingleton(typeof(CacheResourceFilter<>));
+      services.AddSingleton<DefaultCacheOptions>();
 
       // TODO: Remove this workaround from .NET Core 3 preview 7.
       services.Add(new ServiceDescriptor(
