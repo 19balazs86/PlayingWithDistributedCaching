@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Net.Mime;
-using System.Text.Json.Serialization;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
@@ -33,7 +33,7 @@ namespace PlayingWithDistributedCaching.Controllers
 
       if (bytes is null || bytes.Length == 0) return null;
 
-      return JsonSerializer.Parse<User>(bytes);
+      return JsonSerializer.Deserialize<User>(bytes);
     }
 
     [HttpPost]
@@ -41,7 +41,7 @@ namespace PlayingWithDistributedCaching.Controllers
     {
       user.DateCreated = DateTime.Now;
 
-      byte[] bytes = JsonSerializer.ToUtf8Bytes(user);
+      byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(user);
 
       return _cache.SetAsync($"{_keyPrefix}{user.Id}", bytes, _cacheOptions);
     }
@@ -61,7 +61,7 @@ namespace PlayingWithDistributedCaching.Controllers
         new JsonResult(new User { Id = id, FirstName = "JsonResult", DateCreated = DateTime.Now }),
         new ContentResult
         {
-          Content     = JsonSerializer.ToString(new User { Id = id, FirstName = "ContentResult", DateCreated = DateTime.Now }),
+          Content     = JsonSerializer.Serialize(new User { Id = id, FirstName = "ContentResult", DateCreated = DateTime.Now }),
           ContentType = MediaTypeNames.Application.Json
         },
         new NotFoundObjectResult(new User { Id = id, FirstName = "NotFoundObjectResult", DateCreated = DateTime.Now })
