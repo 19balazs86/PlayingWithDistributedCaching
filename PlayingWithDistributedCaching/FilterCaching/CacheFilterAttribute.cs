@@ -26,6 +26,7 @@ namespace PlayingWithDistributedCaching.FilterCaching
       Type[] typeArguments = { CacheOptionProvider };
       Type cacheFilterType = _cacheFilterType.MakeGenericType(typeArguments);
       //object o           = Activator.CreateInstance(cacheFilterType);
+      // Creating an Instance of Type: https://agileobjects.co.uk/create-instance-of-type-net-core
 
       return serviceProvider.GetRequiredService(cacheFilterType) as IFilterMetadata;
     }
